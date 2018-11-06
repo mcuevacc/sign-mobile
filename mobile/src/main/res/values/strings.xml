@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Vital Sign</string>
+    <string name="username">Username</string>
+    <string name="passsword">Password</string>
+    <string name="remember">Remember</string>
+    <string name="login">LOGIN</string>
+</resources>
