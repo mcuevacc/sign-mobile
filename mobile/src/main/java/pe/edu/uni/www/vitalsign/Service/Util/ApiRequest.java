@@ -1,7 +1,7 @@
 package pe.edu.uni.www.vitalsign.Service.Util;
 
 import android.content.Context;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
@@ -12,14 +12,15 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
 public class ApiRequest{
 
-    //private String url="http://18.223.100.180/api-sign/web/app.php";
-    private String url="http://192.168.56.1/api-sign/web/app_dev.php";
+    private String url="http://18.223.100.180/api-sign/web/app.php";
+    //private String url="http://192.168.1.2/api-sign/web/app_dev.php";
     private Context context;
     private RequestQueue mQueue;
 
@@ -43,28 +44,40 @@ public class ApiRequest{
         this.mQueue.add(jsonObjectRequest);
     }
 
-    public void sendGet(final RequestResponse callback, String route) {
+    public void sendGet(final RequestResponse request, String route) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url + route, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        callback.onSuccess(response);
+                        try {
+                            if(response.getBoolean("success")){
+                                request.onSuccess(response);
+                            }else{
+                                Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 try {
                     NetworkResponse response = error.networkResponse;
-
+                    /*
                     String statusCode = String.valueOf(response.statusCode);
                     Log.d("TAG", "Status Code: " + statusCode);
-
+                    */
                     String jsonResponse = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                    Log.d("TAG", "Json: " + jsonResponse);
+
+                    JSONObject resp = new JSONObject(jsonResponse);
+                    Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
 
                 } catch (UnsupportedEncodingException e) {
-                    //hacer algo
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }) {
@@ -81,13 +94,21 @@ public class ApiRequest{
         addQueue(jsonObjectRequest);
     }
 
-    public void sendPost(final RequestResponse callback, String route, JSONObject jsonBody) {
+    public void sendPost(final RequestResponse request, String route, JSONObject jsonBody) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 url + route, jsonBody,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        callback.onSuccess(response);
+                        try {
+                            if(response.getBoolean("success")){
+                                request.onSuccess(response);
+                            }else{
+                                Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -95,14 +116,15 @@ public class ApiRequest{
                 try {
                     NetworkResponse response = error.networkResponse;
 
-                    String statusCode = String.valueOf(response.statusCode);
-                    Log.d("TAG", "Status Code: " + statusCode);
-
                     String jsonResponse = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                    Log.d("TAG", "Json: " + jsonResponse);
+
+                    JSONObject resp = new JSONObject(jsonResponse);
+                    Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
 
                 } catch (UnsupportedEncodingException e) {
-                    //hacer algo
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }) {

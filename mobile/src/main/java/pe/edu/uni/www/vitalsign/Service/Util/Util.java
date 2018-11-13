@@ -19,4 +19,8 @@ public class Util {
         editor.remove(key);
         editor.apply();
     }
+
+    public static void delAllPrefs(SharedPreferences preferences) {
+        preferences.edit().clear().apply();
+    }
 }
