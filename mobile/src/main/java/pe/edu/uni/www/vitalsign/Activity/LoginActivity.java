@@ -1,13 +1,6 @@
 package pe.edu.uni.www.vitalsign.Activity;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,26 +9,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.R;
-import pe.edu.uni.www.vitalsign.Service.Util.ApiBackend.UserService;
-import pe.edu.uni.www.vitalsign.Service.Util.ApiRequest;
-import pe.edu.uni.www.vitalsign.Service.Util.ServiceResponse;
-import pe.edu.uni.www.vitalsign.Service.Util.Util;
+import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
+import pe.edu.uni.www.vitalsign.Service.ApiBackend.User.UserAccount;
+import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 
 public class LoginActivity extends AppCompatActivity {
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
 
-    private SharedPreferences prefs;
+    private Preference pref;
     private ApiRequest apiRequest;
-    private UserService userService;
+    private UserAccount userAccount;
 
     private EditText editTextUsername;
     private EditText editTextPassword;
-    private Switch switchRemember;
     private Button btnLogin;
 
     @Override
@@ -51,41 +40,37 @@ public class LoginActivity extends AppCompatActivity {
                 final String username = editTextUsername.getText().toString();
                 final String password = editTextPassword.getText().toString();
 
-                userService.login(new ServiceResponse() {
+                userAccount.login(new UserAccount.booleanResponse() {
                     @Override
-                    public void onBoolanResponse(boolean resp) {
+                    public void onResponse(boolean resp) {
                         if(resp){
-                            saveOnPreferences(username, password);
-                            if(checkAndRequestPermissions()) {
-                                goToMain();
-                            }
+                            //if(checkAndRequestPermissions()) {
+                            goToMain();
+                            //}
                         }
                     }
-                },prefs,username,password);
+                },username,password);
+
+                saveOnPreferences(username);
             }
         });
         setCredentialsIfExist();
     }
 
-
     private void initElement() {
-        prefs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        apiRequest = new ApiRequest(getApplicationContext());
-        userService = new UserService(apiRequest);
+        pref = new Preference(((Globals)getApplication()).getSharedPref());
+        apiRequest = ((Globals)getApplication()).getApiRequest();
+        userAccount = new UserAccount(apiRequest,pref);
 
         editTextUsername = (EditText) findViewById(R.id.editTextUsername);
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        switchRemember = (Switch) findViewById(R.id.switchRemember);
         btnLogin = (Button) findViewById(R.id.buttonLogin);
     }
 
     private void setCredentialsIfExist() {
-        String username = Util.getDataPrefs(prefs,"username");
-        String password = Util.getDataPrefs(prefs,"password");
-        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
+        String username = pref.getDataPref("username");
+        if (!TextUtils.isEmpty(username)) {
             editTextUsername.setText(username);
-            editTextPassword.setText(password);
-            switchRemember.setChecked(true);
         }
     }
 
@@ -93,18 +78,13 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        finish();
     }
 
-    private void saveOnPreferences(String username, String password) {
-        if( switchRemember.isChecked() ) {
-            Util.setDataPrefs(prefs,"username", username);
-            Util.setDataPrefs(prefs,"password", password);
-        }else{
-            Util.delDataPrefs(prefs,"username");
-            Util.delDataPrefs(prefs,"password");
-        }
+    private void saveOnPreferences(String username) {
+        pref.setDataPref("username", username);
     }
-
+    /*
     private  boolean checkAndRequestPermissions() {
         int permissionSendMessage = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         int locationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -121,4 +101,5 @@ public class LoginActivity extends AppCompatActivity {
         }
         return true;
     }
+    */
 }

@@ -1,7 +1,5 @@
 package pe.edu.uni.www.vitalsign.Fragment;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,12 +11,13 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import pe.edu.uni.www.vitalsign.Activity.MyLocation;
+import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.R;
-import pe.edu.uni.www.vitalsign.Service.Util.Util;
+import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 
 public class HomeFragment extends Fragment {
 
-    private SharedPreferences prefs;
+    private Preference pref;
 
     int increment = 4;
     MyLocation myLocation = new MyLocation();
@@ -36,6 +35,7 @@ public class HomeFragment extends Fragment {
 
         initElement();
 
+        /*
         myLocation.getLocation(getContext(), locationResult);
 
         boolean r = myLocation.getLocation(getContext(),
@@ -48,16 +48,18 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        */
+
         return view;
     }
 
     private void initElement() {
-        prefs = getContext().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        pref = new Preference(((Globals)getActivity().getApplicationContext()).getSharedPref());
         button = (Button) view.findViewById(R.id.button);
     }
 
     private void sendSms() {
-        String contenido = "Help me!\nhttp://maps.google.com/?q="+(Util.getDataPrefs(prefs,"latitude"))+","+(Util.getDataPrefs(prefs,"longitude"));
+        String contenido = "Help me!\nhttp://maps.google.com/?q="+(pref.getDataPref("latitude"))+","+(pref.getDataPref("longitude"));
 
         try {
             SmsManager smsManager = SmsManager.getDefault();
@@ -122,8 +124,8 @@ public class HomeFragment extends Fragment {
                     Toast.LENGTH_LONG).show();
 
             try {
-                Util.setDataPrefs(prefs,"latitude", ""+Latitude);
-                Util.setDataPrefs(prefs,"longitude", ""+Longitude);
+                pref.setDataPref("latitude", ""+Latitude);
+                pref.setDataPref("longitude", ""+Longitude);
 
             } catch (Exception e) {
                 Toast.makeText(getContext(),e.toString(), Toast.LENGTH_LONG).show();
