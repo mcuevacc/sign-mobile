@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initUI();
     }
 
-
     private void initUI() {
         pref = new Preference(((Globals)this.getApplication()).getSharedPref());
 

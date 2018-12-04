@@ -27,10 +27,6 @@ public class UserContact {
         void onResponse(boolean response);
     }
 
-    public interface intResponse{
-        void onResponse(int response);
-    }
-
     private ApiRequest apiRequest;
 
     public  UserContact(ApiRequest apiRequest){
@@ -39,21 +35,18 @@ public class UserContact {
 
     public void list(final UserContact.contactsResponse listener) {
 
-        apiRequest.sendGet(new ApiRequest.requestResponse() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    String contactStr = (response.getJSONArray("entidad")).toString();
-                    Type listType = new TypeToken<List<Contact>>() {}.getType();
-                    List<Contact> contacts = new Gson().fromJson(contactStr, listType);
-                    Collections.reverse(contacts);
+        apiRequest.send(response -> {
+            try {
+                String contactStr = (response.getJSONArray("entidad")).toString();
+                Type listType = new TypeToken<List<Contact>>() {}.getType();
+                List<Contact> contacts = new Gson().fromJson(contactStr, listType);
+                Collections.reverse(contacts);
 
-                    listener.onResponse(contacts);
-                } catch (JSONException e) {
-                    //listener.onResponse(false);
-                }
+                listener.onResponse(contacts);
+            } catch (JSONException e) {
+                //listener.onResponse(false);
             }
-        }, "/user/contact/l");
+        },"GET", "/user/contact/l");
     }
 
     public void add(final UserContact.booleanResponse listener, Contact contact) {
@@ -64,21 +57,40 @@ public class UserContact {
             jsonBody.put("number", contact.getNumber());
         } catch (JSONException e) { }
 
-        apiRequest.sendPost(new ApiRequest.requestResponse() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    int id = response.getInt("id");
-                    contact.setId(id);
+        apiRequest.send(response -> {
+            try {
+                int id = response.getInt("id");
+                contact.setId(id);
 
-                    //listener.onResponse(id);
-                    listener.onResponse(true);
+                //listener.onResponse(id);
+                listener.onResponse(true);
 
-                } catch (JSONException e) {
-                    //listener.onResponse(0);
-                    listener.onResponse(false);
-                }
+            } catch (JSONException e) {
+                //listener.onResponse(0);
+                listener.onResponse(false);
             }
-        }, "/user/contact/c", jsonBody);
+        },"POST", "/user/contact/c", jsonBody);
+    }
+
+    public void update(final UserContact.booleanResponse listener, Contact contact) {
+
+        JSONObject  jsonBody = new JSONObject();
+        try {
+            jsonBody.put("name", contact.getName());
+            jsonBody.put("number", contact.getNumber());
+        } catch (JSONException e) { }
+
+        apiRequest.send(response -> {
+                listener.onResponse(true);
+
+        },"PUT", "/user/contact/u/"+contact.getId(), jsonBody);
+    }
+
+    public void delete(final UserContact.booleanResponse listener, int id) {
+
+        apiRequest.send(response -> {
+                listener.onResponse(true);
+
+        },"DELETE", "/user/contact/d/"+id);
     }
 }

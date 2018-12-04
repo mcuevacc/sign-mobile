@@ -50,23 +50,39 @@ public class ApiRequest{
         this.mQueue.add(jsonObjectRequest);
     }
 
-    public void sendGet(final requestResponse listener, String route) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
-                url + route, null,
+    public void send(final requestResponse listener, String method, String route){
+        send(listener,method,route,null);
+    }
+
+    public void send(final requestResponse listener, String method, String route, JSONObject jsonBody) {
+
+        int requestMethod;
+        if(method.equals("GET")){
+            requestMethod = Request.Method.GET;
+        }else if(method.equals("POST")){
+            requestMethod = Request.Method.POST;
+        }else if(method.equals("PUT")){
+            requestMethod = Request.Method.PUT;
+        }else if(method.equals("DELETE")){
+            requestMethod = Request.Method.DELETE;
+        }else{
+            requestMethod = Request.Method.OPTIONS;
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(requestMethod,url + route, jsonBody,
                 new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            if(response.getBoolean("success")){
-                                listener.onSuccess(response);
-                            }else{
-                                Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if(response.getBoolean("success")){
+                        listener.onSuccess(response);
+                    }else{
+                        Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
                     }
-                }, new Response.ErrorListener() {
+                } catch (JSONException e) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }}, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 try {
@@ -99,53 +115,4 @@ public class ApiRequest{
         };
         addQueue(jsonObjectRequest);
     }
-
-    public void sendPost(final requestResponse listener, String route, JSONObject jsonBody) {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
-                url + route, jsonBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            if(response.getBoolean("success")){
-                                listener.onSuccess(response);
-                            }else{
-                                Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try {
-                    NetworkResponse response = error.networkResponse;
-
-                    String jsonResponse = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-
-                    JSONObject resp = new JSONObject(jsonResponse);
-                    Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
-
-                } catch (UnsupportedEncodingException e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json");
-                if (authToken != null && !authToken.isEmpty()) {
-                    headers.put("authToken", authToken);
-                }
-                return headers;
-            }
-        };
-        addQueue(jsonObjectRequest);
-    }
 }
-
-

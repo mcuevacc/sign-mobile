@@ -23,10 +23,16 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         void onItemClick(View v, Contact contact, int position);
     }
 
+    public interface OnMenuItemClickListener {
+        void onEditClick(Contact contact, int position);
+        void onDeleteClick(Contact contact, int position);
+    }
+
     private List<Contact> contacts;
     private int layout_item;
     private Activity activity;
     private OnItemClickListener itemClickListener;
+    private OnMenuItemClickListener menuItemClickListener;
 
     public ContactAdapter(List<Contact> contacts, int layout, Activity activity) {
         this.contacts = contacts;
@@ -36,6 +42,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.itemClickListener = listener;
+    }
+
+    public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
+        this.menuItemClickListener = listener;
     }
 
     public void updateList(List<Contact> contacts) {
@@ -95,7 +105,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
             Contact contactSelected = contacts.get(this.getAdapterPosition());
             contextMenu.setHeaderTitle(contactSelected.getName());
-            contextMenu.setHeaderIcon(R.drawable.baseline_info_black_24);
             MenuInflater inflater = activity.getMenuInflater();
             inflater.inflate(R.menu.menu_item_default, contextMenu);
             for (int i = 0; i < contextMenu.size(); i++)
@@ -104,14 +113,13 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
+            int position=getAdapterPosition();
             switch (menuItem.getItemId()) {
-                case R.id.delete:
-                    contacts.remove(getAdapterPosition());
-                    notifyItemRemoved(getAdapterPosition());
-                    return true;
                 case R.id.edit:
-                    //editarrrrrr
-                    notifyItemChanged(getAdapterPosition());
+                    menuItemClickListener.onEditClick(contacts.get(position),position);
+                    return true;
+                case R.id.delete:
+                    menuItemClickListener.onDeleteClick(contacts.get(position),position);
                     return true;
                 default:
                     return false;

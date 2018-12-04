@@ -28,46 +28,40 @@ public class UserAccount{
             jsonBody.put("password", password);
         } catch (JSONException e) {}
 
-        apiRequest.sendPost(new ApiRequest.requestResponse() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    String authToken = response.getString("authToken");
-                    pref.setDataPref("authToken", authToken);
-                    apiRequest.setAuthToken(authToken);
+        apiRequest.send(response -> {
+            try {
+                String authToken = response.getString("authToken");
+                pref.setDataPref("authToken", authToken);
+                apiRequest.setAuthToken(authToken);
 
-                    JSONObject profile = response.getJSONObject("profile");
-                    pref.setDataPref("email", profile.getString("email"));
+                JSONObject profile = response.getJSONObject("profile");
+                pref.setDataPref("email", profile.getString("email"));
 
-                    listener.onResponse(true);
+                listener.onResponse(true);
 
-                } catch (JSONException e) {
-                    listener.onResponse(false);
-                }
-
+            } catch (JSONException e) {
+                listener.onResponse(false);
             }
-        }, "/user/account/login", jsonBody);
+
+        },"POST", "/user/account/login", jsonBody);
     }
 
     public void toking(final booleanResponse listener) {
         apiRequest.setAuthToken(pref.getDataPref("authToken"));
-        apiRequest.sendGet(new ApiRequest.requestResponse() {
-            @Override
-            public void onSuccess(JSONObject response) {
-                try {
-                    String authToken = response.getString("authToken");
-                    pref.setDataPref("authToken", authToken);
-                    apiRequest.setAuthToken(authToken);
+        apiRequest.send(response -> {
+            try {
+                String authToken = response.getString("authToken");
+                pref.setDataPref("authToken", authToken);
+                apiRequest.setAuthToken(authToken);
 
-                    JSONObject profile = response.getJSONObject("profile");
-                    pref.setDataPref("email", profile.getString("email"));
+                JSONObject profile = response.getJSONObject("profile");
+                pref.setDataPref("email", profile.getString("email"));
 
-                    listener.onResponse(true);
+                listener.onResponse(true);
 
-                } catch (JSONException e) {
-                    listener.onResponse(false);
-                }
+            } catch (JSONException e) {
+                listener.onResponse(false);
             }
-        }, "/user/account/toking");
+        },"GET", "/user/account/toking");
     }
 }

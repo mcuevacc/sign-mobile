@@ -1,10 +1,12 @@
 package pe.edu.uni.www.vitalsign.Fragment;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.User.UserContact;
 
-public class ContactFragment extends Fragment {
+public class ContactFragment extends Fragment implements DialogInterface.OnClickListener{
 
     private View view;
 
@@ -38,6 +41,14 @@ public class ContactFragment extends Fragment {
     private RecyclerView.LayoutManager layoutManager;
 
     private FloatingActionButton fab;
+    private AlertDialog.Builder builder;
+
+    private EditText editTextName;
+    private EditText editTextNumber;
+
+    /////////////////////////////////////
+    private char crudContact;
+    private int positionContact;
 
     public ContactFragment() { }
 
@@ -75,18 +86,24 @@ public class ContactFragment extends Fragment {
     public void initActions(){
 
         fab.setOnClickListener(view -> {
-            Contact newContact = new Contact("name", "number",25);
+            crudContact='c';
+            showDialogCUD();
+        });
 
-            userContact.add(new UserContact.booleanResponse() {
-                @Override
-                public void onResponse(boolean resp) {
-                    if(resp){
-                        contacts.add(0,newContact);
-                        adapter.notifyItemInserted(0);
-                        layoutManager.scrollToPosition(0);
-                    }
-                }
-            },newContact);
+        adapter.setOnMenuItemClickListener(new ContactAdapter.OnMenuItemClickListener() {
+            @Override
+            public void onEditClick(Contact contact, int position) {
+                crudContact='u';
+                positionContact=position;
+                showDialogCUD();
+            }
+
+            @Override
+            public void onDeleteClick(Contact contact, int position) {
+                crudContact='d';
+                positionContact=position;
+                showDialogCUD();
+            }
         });
 
         adapter.setOnItemClickListener((view, contact, position) -> {
@@ -105,13 +122,82 @@ public class ContactFragment extends Fragment {
         });
     }
 
-    private void getAllContacts() {
-        userContact.list(new UserContact.contactsResponse() {
-            @Override
-            public void onResponse(List<Contact> list) {
-                contacts=list;
-                adapter.updateList(contacts);
+    public void showDialogCUD(){
+        builder = new AlertDialog.Builder(getContext());
+        if(crudContact=='c')
+            builder.setTitle("Create Contact");
+        else if(crudContact=='u')
+            builder.setTitle("Edit Contact");
+        else if(crudContact=='d') {
+            builder.setTitle("Delete Contact");
+        }
+
+        if(crudContact=='c' || crudContact=='u') {
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_fragment_contact_cu, null);
+            editTextName = (EditText) dialogView.findViewById(R.id.editTextUsername);
+            editTextNumber = (EditText) dialogView.findViewById(R.id.editTextNumber);
+            builder.setView(dialogView);
+        }
+
+        if(crudContact=='u' || crudContact=='d') {
+            Contact contact = contacts.get(positionContact);
+            if(crudContact=='u'){
+                editTextName.setText(contact.getName());
+                editTextNumber.setText(contact.getNumber());
+            }else if(crudContact=='d'){
+                builder.setMessage("Name: "+contact.getName()+"\nNumber: "+contact.getNumber());
             }
+        }
+        builder.setPositiveButton("OK", this);
+        builder.setNegativeButton("Cancel", this);
+        builder.show();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialogInterface, int which) {
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            if(crudContact=='c'){
+                //Create
+                Contact newContact = new Contact(editTextName.getText().toString(), editTextNumber.getText().toString());
+                userContact.add(resp -> {
+                    if(resp){
+                        contacts.add(0,newContact);
+                        adapter.notifyItemInserted(0);
+                        layoutManager.scrollToPosition(0);
+                    }
+                },newContact);
+            }else if(crudContact=='u'){
+                //Update
+                Contact editContact = contacts.get(positionContact);
+                editContact.setName(editTextName.getText().toString());
+                editContact.setNumber(editTextNumber.getText().toString());
+
+                userContact.update(resp -> {
+                    if(resp){
+                        adapter.notifyItemChanged(positionContact);
+                        //layoutManager.scrollToPosition(0);
+                    }
+                },editContact);
+            }else if(crudContact=='d'){
+                //Delete
+                Contact deleteContact = contacts.get(positionContact);
+                userContact.delete(resp -> {
+                    if(resp){
+                        contacts.remove(positionContact);
+                        adapter.notifyItemRemoved(positionContact);
+                    }
+                },deleteContact.getId());
+            }
+        } else if (which == DialogInterface.BUTTON_NEGATIVE) {
+            dialogInterface.cancel();
+        }
+    }
+
+    private void getAllContacts() {
+        userContact.list(list -> {
+            contacts=list;
+            adapter.updateList(contacts);
         });
     }
 }
