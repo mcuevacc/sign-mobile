@@ -28,7 +28,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/profile1"
         tools:srcCompat="@drawable/baseline_image_black_24" />
 
     <TextView

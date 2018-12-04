@@ -2,7 +2,10 @@ package pe.edu.uni.www.vitalsign.Fragment;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,14 +28,16 @@ public class ContactFragment extends Fragment {
 
     private View view;
 
+    private ApiRequest apiRequest;
+    private UserContact userContact;
+
+    private List<Contact> contacts;
+    private ContactAdapter adapter;
+
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    private ContactAdapter adapter;
-    private List<Contact> contacts;
-
-    private ApiRequest apiRequest;
-    private UserContact userContact;
+    private FloatingActionButton fab;
 
     public ContactFragment() { }
 
@@ -41,26 +46,24 @@ public class ContactFragment extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_contact, container, false);
 
-        initElement();
+        initUI();
 
-        adapter = new ContactAdapter(contacts, R.layout.recycler_view_contact_item, getActivity(), new ContactAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Contact contact, int position) {
-                Toast.makeText(getContext(), "Nombre:"+contact.getName()+" Number:"+contact.getNumber(), Toast.LENGTH_SHORT).show();
-                adapter.notifyItemChanged(position);
-            }
-        });
-
+        adapter = new ContactAdapter(contacts, R.layout.recycler_view_contact_item, getActivity());
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+        initActions();
 
         return view;
     }
 
-    private void initElement() {
+    private void initUI() {
         apiRequest = ((Globals)getActivity().getApplicationContext()).getApiRequest();
         userContact = new UserContact(apiRequest);
+
+        fab = view.findViewById(R.id.fab);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewContact);
         layoutManager = new LinearLayoutManager(getContext());
@@ -68,27 +71,38 @@ public class ContactFragment extends Fragment {
         contacts = new ArrayList<Contact>();
         getAllContacts();
     }
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.options_menu, menu);
-        return true;
-    }
-    */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.add_fruit:
-                // Rescatamos el número de frutas para saber en que posición insertaremos
-                int position = contacts.size();
-                contacts.add(position, new Contact("name", "number"));
-                adapter.notifyItemInserted(position);
-                layoutManager.scrollToPosition(position);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    public void initActions(){
+
+        fab.setOnClickListener(view -> {
+            Contact newContact = new Contact("name", "number",25);
+
+            userContact.add(new UserContact.booleanResponse() {
+                @Override
+                public void onResponse(boolean resp) {
+                    if(resp){
+                        contacts.add(0,newContact);
+                        adapter.notifyItemInserted(0);
+                        layoutManager.scrollToPosition(0);
+                    }
+                }
+            },newContact);
+        });
+
+        adapter.setOnItemClickListener((view, contact, position) -> {
+            Toast.makeText(getContext(), "Id:"+contact.getId()+"Nombre:"+contact.getName()+" Number:"+contact.getNumber(), Toast.LENGTH_SHORT).show();
+            //adapter.notifyItemChanged(position);
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0)
+                    fab.hide();
+                else if (dy < 0)
+                    fab.show();
+            }
+        });
     }
 
     private void getAllContacts() {

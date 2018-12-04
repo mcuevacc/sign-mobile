@@ -1,6 +1,8 @@
 package pe.edu.uni.www.vitalsign.Adapter;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,16 +19,23 @@ import pe.edu.uni.www.vitalsign.R;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHolder> {
 
-    private List<Contact> contacts;
-    private int layout;
-    private Activity activity;
-    private OnItemClickListener listener;
+    public interface OnItemClickListener {
+        void onItemClick(View v, Contact contact, int position);
+    }
 
-    public ContactAdapter(List<Contact> contacts, int layout, Activity activity, OnItemClickListener listener) {
+    private List<Contact> contacts;
+    private int layout_item;
+    private Activity activity;
+    private OnItemClickListener itemClickListener;
+
+    public ContactAdapter(List<Contact> contacts, int layout, Activity activity) {
         this.contacts = contacts;
-        this.layout = layout;
+        this.layout_item = layout;
         this.activity = activity;
-        this.listener = listener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.itemClickListener = listener;
     }
 
     public void updateList(List<Contact> contacts) {
@@ -34,16 +43,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         notifyDataSetChanged();
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(activity).inflate(layout, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+    public ContactAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(activity).inflate(layout_item, parent, false);
+
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bind(contacts.get(position));
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+
+        if (viewHolder instanceof ViewHolder) {
+
+            Contact contact = contacts.get(position);
+
+            ViewHolder holder = (ViewHolder) viewHolder;
+            holder.textViewName.setText(contact.getName());
+            holder.textViewNumber.setText(contact.getNumber());
+        }
     }
 
     @Override
@@ -53,6 +71,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
 
+        public CardView cardViewContact;
         public TextView textViewName;
         public TextView textViewNumber;
 
@@ -60,29 +79,25 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
             super(itemView);
 
             itemView.setOnClickListener(this);
+            cardViewContact = itemView.findViewById(R.id.cardViewContact);
             textViewName = (TextView) itemView.findViewById(R.id.textViewName);
             textViewNumber = (TextView) itemView.findViewById(R.id.textViewNumber);
             itemView.setOnCreateContextMenuListener(this);
         }
 
-        public void bind(final Contact contact) {
-            this.textViewName.setText(contact.getName());
-            this.textViewNumber.setText(contact.getNumber());
-
-        }
-
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
             int position = getAdapterPosition();
-            listener.onItemClick(contacts.get(position), position);
+            itemClickListener.onItemClick(view, contacts.get(position), position);
         }
 
         @Override
         public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
             Contact contactSelected = contacts.get(this.getAdapterPosition());
             contextMenu.setHeaderTitle(contactSelected.getName());
+            contextMenu.setHeaderIcon(R.drawable.baseline_info_black_24);
             MenuInflater inflater = activity.getMenuInflater();
-            inflater.inflate(R.menu.context_menu_default, contextMenu);
+            inflater.inflate(R.menu.menu_item_default, contextMenu);
             for (int i = 0; i < contextMenu.size(); i++)
                 contextMenu.getItem(i).setOnMenuItemClickListener(this);
         }
@@ -91,7 +106,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.delete:
-                     contacts.remove(getAdapterPosition());
+                    contacts.remove(getAdapterPosition());
                     notifyItemRemoved(getAdapterPosition());
                     return true;
                 case R.id.edit:
@@ -102,9 +117,5 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
                     return false;
             }
         }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(Contact contact, int position);
     }
 }

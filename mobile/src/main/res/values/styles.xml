@@ -9,11 +9,23 @@
         <!--<item name="coordinatorLayoutStyle">@style/Widget.Design.CoordinatorLayout</item>-->
         <!--<item name="coordinatorLayoutStyle">>@style/Widget.Support.CoordinatorLayout</item>-->
         <item name="cardViewStyle">@style/CardView</item>
+
+        <!-- To change the popup menu and app text color  -->
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <!-- To change the background of options menu-->
+        <!--<item name="android:itemBackground">@color/md_grey_400</item>-->
     </style>
 
     <style name="AppTheme.NoStatusBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/trans</item>
+    </style>
+
+    <style name="popupMenuStyle">
+        <!-- To change the popup menu and app text color  -->
+        <item name="android:textColor">@color/colorPrimary</item>
+        <!-- To change the background of options menu-->
+        <item name="android:itemBackground">@color/md_red_900</item>
     </style>
 
     <style name="SplashScreen" parent="Theme.AppCompat.NoActionBar">
@@ -57,7 +69,6 @@
     <style name="PSButton.Send" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/colorPrimary</item>
     </style>
-
 
     <style name="PSButton.Grey800" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/md_grey_800</item>

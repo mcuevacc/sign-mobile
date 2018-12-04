@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
@@ -64,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         View headerLayout = navigationView.getHeaderView(0);
         ImageView userImageView = headerLayout.findViewById(R.id.imageViewUser);
-        Util.setCircleImageToImageView(this, userImageView, R.drawable.profile1, 0, 0);
+        Util.setCircleImageToImageView(this, userImageView, R.drawable.avatar, 0, 0);
         name = (TextView) headerLayout.findViewById(R.id.textViewName);
 
         initUsername();

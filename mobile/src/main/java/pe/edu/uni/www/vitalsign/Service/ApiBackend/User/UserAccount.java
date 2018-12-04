@@ -13,7 +13,6 @@ public class UserAccount{
     }
 
     private ApiRequest apiRequest;
-    private JSONObject jsonBody;
     private Preference pref;
 
     public  UserAccount(ApiRequest apiRequest, Preference pref){
@@ -23,11 +22,11 @@ public class UserAccount{
 
     public void login(final booleanResponse listener, String username, String password) {
 
+        JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody = new JSONObject();
             jsonBody.put("username", username);
             jsonBody.put("password", password);
-        } catch (JSONException e) { }
+        } catch (JSONException e) {}
 
         apiRequest.sendPost(new ApiRequest.requestResponse() {
             @Override
