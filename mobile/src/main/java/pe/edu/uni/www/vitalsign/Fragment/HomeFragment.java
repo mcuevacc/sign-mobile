@@ -1,13 +1,20 @@
 package pe.edu.uni.www.vitalsign.Fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import pe.edu.uni.www.vitalsign.Activity.MyLocation;
@@ -24,6 +31,7 @@ public class HomeFragment extends Fragment {
 
     private View view;
     private Button button;
+    private TextView heartText;
 
     public HomeFragment() {
     }
@@ -47,16 +55,21 @@ public class HomeFragment extends Fragment {
                 sendSms();
             }
         });
-
         */
 
+        IntentFilter newFilter = new IntentFilter(Intent.ACTION_SEND);
+        Receiver messageReceiver = new Receiver();
+        LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(messageReceiver, newFilter);
         return view;
     }
 
     private void initElement() {
         pref = new Preference(((Globals)getActivity().getApplicationContext()).getSharedPref());
         button = (Button) view.findViewById(R.id.button);
+        heartText = (TextView) view.findViewById(R.id.heartText);
     }
+
+
 
     private void sendSms() {
         String contenido = "Help me!\nhttp://maps.google.com/?q="+(pref.getDataPref("latitude"))+","+(pref.getDataPref("longitude"));
@@ -132,6 +145,19 @@ public class HomeFragment extends Fragment {
             }
         }
     };
+
+
+    public class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Bundle bundle = intent.getExtras();
+            if (bundle != null && bundle.getString("message") != null) {
+                String message = bundle.getString("message");
+                heartText.setText(message);
+            }
+        }
+    }
 }
 
 

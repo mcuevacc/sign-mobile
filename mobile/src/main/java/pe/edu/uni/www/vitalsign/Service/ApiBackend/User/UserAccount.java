@@ -15,7 +15,12 @@ public class UserAccount{
     private ApiRequest apiRequest;
     private Preference pref;
 
-    public  UserAccount(ApiRequest apiRequest, Preference pref){
+    public UserAccount(ApiRequest apiRequest){
+        this.apiRequest = apiRequest;
+        this.pref = pref;
+    }
+
+    public UserAccount(ApiRequest apiRequest, Preference pref){
         this.apiRequest = apiRequest;
         this.pref = pref;
     }
@@ -63,5 +68,46 @@ public class UserAccount{
                 listener.onResponse(false);
             }
         },"GET", "/user/account/toking");
+    }
+
+    public void sendCode(final booleanResponse listener, String username) {
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+        } catch (JSONException e) {}
+
+        apiRequest.send(response -> {
+                listener.onResponse(true);
+
+        },"POST", "/user/account/sendcode", jsonBody);
+    }
+
+    public void checkCode(final booleanResponse listener, String username, String code) {
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+            jsonBody.put("code", code);
+        } catch (JSONException e) {}
+
+        apiRequest.send(response -> {
+            listener.onResponse(true);
+
+        },"POST", "/user/account/checkcode", jsonBody);
+    }
+
+    public void create(final booleanResponse listener, String username, String code) {
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+            jsonBody.put("code", code);
+        } catch (JSONException e) {}
+
+        apiRequest.send(response -> {
+            listener.onResponse(true);
+
+        },"POST", "/user/account/checkcode", jsonBody);
     }
 }

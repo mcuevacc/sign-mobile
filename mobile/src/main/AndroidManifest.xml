@@ -3,10 +3,10 @@
     package="pe.edu.uni.www.vitalsign">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BODY_SENSORS"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    '
     <application
         android:name=".App.Globals"
         android:allowBackup="true"
@@ -15,10 +15,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.MainActivity"
-            android:theme="@style/AppTheme.NoStatusBar"/>
-        <activity android:name=".Activity.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".Activity.MainActivity"
+            android:theme="@style/AppTheme.NoStatusBar" />
+        <activity
+            android:name=".Activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".App.SplashScreenActivity"
             android:theme="@style/SplashScreen">
@@ -28,7 +31,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activity.NewAccountActivity"></activity>
 
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <service
+            android:name=".Service.MessageService"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/my_path" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

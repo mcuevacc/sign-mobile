@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/newaccountphone"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.NewAccountPhoneFragment">
+
+    <ImageView
+        android:id="@+id/imageViewPhone"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/verification1" />
+
+    <TextView
+        android:id="@+id/textView250"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Verify Your Number"
+        android:textColor="@color/md_grey_600"
+        android:textSize="@dimen/font_title_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewPhone" />
+
+    <TextView
+        android:id="@+id/textView251"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/roboto"
+        android:text="Se le enviará un codigo por SMS"
+        android:textAlignment="center"
+        android:textColor="@color/md_grey_600"
+        android:textSize="@dimen/font_body_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView250" />
+
+    <EditText
+        android:id="@+id/editTextCode"
+        android:layout_width="63dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/edittext_line_border"
+        android:ems="10"
+        android:fontFamily="@font/roboto"
+        android:hint="+51"
+        android:inputType="textPersonName|phone"
+        android:textAlignment="center"
+        android:textColor="@color/md_grey_600"
+        android:textSize="@dimen/font_title_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView251" />
+
+    <EditText
+        android:id="@+id/editTextNumber"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/edittext_line_border"
+        android:ems="10"
+        android:fontFamily="@font/roboto"
+        android:hint="98754321"
+        android:inputType="textPersonName|phone"
+        android:paddingStart="8dp"
+        android:textAlignment="viewStart"
+        android:textColor="@color/md_grey_600"
+        android:textSize="@dimen/font_title_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/editTextCode"
+        app:layout_constraintTop_toBottomOf="@+id/textView251" />
+
+    <Button
+        android:id="@+id/buttonContinue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="48dp"
+        android:background="@drawable/button_dialog_primary_background"
+        android:fontFamily="@font/roboto"
+        android:text="Continue"
+        android:textColor="@color/md_white_1000"
+        android:textSize="@dimen/font_body_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextNumber" />
+
+</android.support.constraint.ConstraintLayout>
