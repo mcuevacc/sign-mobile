@@ -31,7 +31,7 @@ public class SendMessage extends Thread {
         try {
             List<Node> nodes = Tasks.await(nodeListTask);
             for (Node node : nodes) {
-                Task<Integer> sendMessageTask = Wearable.getMessageClient(this.activity).sendMessage(node.getId(), path, message.getBytes());
+                Task<Integer> sendMessageTask = Wearable.getMessageClient(activity).sendMessage(node.getId(), path, message.getBytes());
             }
         } catch (ExecutionException exception) {
         } catch (InterruptedException exception) {

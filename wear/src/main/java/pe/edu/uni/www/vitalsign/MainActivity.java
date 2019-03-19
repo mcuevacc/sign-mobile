@@ -78,8 +78,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
         mTextView.setText(Integer.toString(mHeartRate));
 
-        String datapath = "/heart-rate";
-        new SendMessage(this.getApplicationContext(), this, datapath, Integer.toString(mHeartRate)).start();
+        new SendMessage(this.getApplicationContext(), this, "/heart-rate", Integer.toString(mHeartRate)).start();
     }
 
     @Override

@@ -26,8 +26,8 @@ public class ApiRequest{
         void onSuccess(JSONObject result);
     }
 
-    //private static String url="http://18.223.100.180/api-sign/web/app.php";
-    private static String url="http://192.168.1.3/api-sign/web/app_dev.php";
+    private static String url="http://18.224.27.30/api-sign/web/app.php";
+    //private static String url="http://192.168.1.3/api-sign/web/app_dev.php";
     private Context context;
     private RequestQueue mQueue;
 
