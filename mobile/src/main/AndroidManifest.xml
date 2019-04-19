@@ -3,8 +3,9 @@
     package="pe.edu.uni.www.vitalsign">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BODY_SENSORS"/>
+    <!--<uses-permission android:name="android.permission.BODY_SENSORS"/>-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
@@ -45,6 +46,14 @@
                 <data android:scheme="wear" android:host="*" android:pathPrefix="/heart-rate" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".Service.SmsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

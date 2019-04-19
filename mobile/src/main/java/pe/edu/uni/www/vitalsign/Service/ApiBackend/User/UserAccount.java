@@ -12,12 +12,13 @@ public class UserAccount{
         void onResponse(boolean response);
     }
 
+    private static String ROUTE = "/user/account/";
+
     private ApiRequest apiRequest;
     private Preference pref;
 
     public UserAccount(ApiRequest apiRequest){
         this.apiRequest = apiRequest;
-        this.pref = pref;
     }
 
     public UserAccount(ApiRequest apiRequest, Preference pref){
@@ -48,7 +49,7 @@ public class UserAccount{
                 listener.onResponse(false);
             }
 
-        },"POST", "/user/account/login", jsonBody);
+        },"POST", ROUTE+"login", jsonBody);
     }
 
     public void toking(final booleanResponse listener) {
@@ -67,7 +68,24 @@ public class UserAccount{
             } catch (JSONException e) {
                 listener.onResponse(false);
             }
-        },"GET", "/user/account/toking");
+        },"GET", ROUTE+"toking");
+    }
+
+    public void exist(final booleanResponse listener, String username) {
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+        } catch (JSONException e) {}
+
+        apiRequest.send(response -> {
+            try {
+                Boolean exist = response.getBoolean("exist");
+                listener.onResponse(exist);
+            } catch (JSONException e) {
+                listener.onResponse(false);
+            }
+        },"POST", ROUTE+"exist", jsonBody);
     }
 
     public void sendCode(final booleanResponse listener, String username) {
@@ -80,7 +98,7 @@ public class UserAccount{
         apiRequest.send(response -> {
                 listener.onResponse(true);
 
-        },"POST", "/user/account/sendcode", jsonBody);
+        },"POST", ROUTE+"sendcode", jsonBody);
     }
 
     public void checkCode(final booleanResponse listener, String username, String code) {
@@ -94,7 +112,7 @@ public class UserAccount{
         apiRequest.send(response -> {
             listener.onResponse(true);
 
-        },"POST", "/user/account/checkcode", jsonBody);
+        },"POST", ROUTE+"checkcode", jsonBody);
     }
 
     public void create(final booleanResponse listener, String username, String code) {
@@ -108,6 +126,19 @@ public class UserAccount{
         apiRequest.send(response -> {
             listener.onResponse(true);
 
-        },"POST", "/user/account/checkcode", jsonBody);
+        },"POST", ROUTE+"checkcode", jsonBody);
+    }
+
+    public void sendCodeUser(final booleanResponse listener, String username) {
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", username);
+        } catch (JSONException e) {}
+
+        apiRequest.send(response -> {
+            listener.onResponse(true);
+
+        },"POST", ROUTE+"sendcodeuser", jsonBody);
     }
 }

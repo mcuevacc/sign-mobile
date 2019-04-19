@@ -16,8 +16,6 @@ import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
-
     private Preference pref;
     private ApiRequest apiRequest;
     private UserAccount userAccount;
@@ -25,7 +23,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextUsername;
     private EditText editTextPassword;
     private Button btnLogin;
-    private Button btnCreateAccountButton;
+    private Button btnCreateAccount;
+    private Button btnForgot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,19 +38,22 @@ public class LoginActivity extends AppCompatActivity {
             final String password = editTextPassword.getText().toString();
 
             userAccount.login(resp -> {
-                if(resp){
-                    //if(checkAndRequestPermissions()) {
-                    goToMain();
-                    //}
-                }
+                if(resp) goToMain();
             },username,password);
 
             saveOnPreferences(username);
         });
         setCredentialsIfExist();
 
-        btnCreateAccountButton.setOnClickListener(view -> {
+        btnCreateAccount.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), NewAccountActivity.class);
+            intent.putExtra("isNewUser", true);
+            startActivity(intent);
+        });
+
+        btnForgot.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), NewAccountActivity.class);
+            intent.putExtra("isNewUser", false);
             startActivity(intent);
         });
     }
@@ -65,7 +67,8 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = (EditText) findViewById(R.id.editTextPassword);
         btnLogin = (Button) findViewById(R.id.buttonLogin);
 
-        btnCreateAccountButton = (Button) findViewById(R.id.buttonCreateAccountButton);
+        btnCreateAccount = (Button) findViewById(R.id.buttonCreateAccount);
+        btnForgot = (Button) findViewById(R.id.buttonForgot);
     }
 
     private void setCredentialsIfExist() {
@@ -85,22 +88,4 @@ public class LoginActivity extends AppCompatActivity {
     private void saveOnPreferences(String username) {
         pref.setDataPref("username", username);
     }
-    /*
-    private  boolean checkAndRequestPermissions() {
-        int permissionSendMessage = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
-        int locationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        List<String> listPermissionsNeeded = new ArrayList<>();
-        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (permissionSendMessage != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),REQUEST_ID_MULTIPLE_PERMISSIONS);
-            return false;
-        }
-        return true;
-    }
-    */
 }
