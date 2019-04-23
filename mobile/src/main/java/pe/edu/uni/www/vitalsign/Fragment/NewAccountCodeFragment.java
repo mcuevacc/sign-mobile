@@ -92,13 +92,9 @@ public class NewAccountCodeFragment extends Fragment implements TextWatcher, Sms
             Bundle args = new Bundle();
             args.putString("username", username);
             args.putString("code", editTextCode.getText().toString());
+            args.putBoolean("isNewUser", isNewUser);
 
-            Fragment fragment;
-            if(isNewUser)
-                fragment = new NewAccountInfoFragment();
-            else
-                fragment = new NewAccountPasswordFragment();
-
+            Fragment fragment = new NewAccountInfoFragment();
             fragment.setArguments(args);
 
             getFragmentManager()

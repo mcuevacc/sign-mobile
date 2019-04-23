@@ -3,6 +3,8 @@ package pe.edu.uni.www.vitalsign.Service.ApiBackend.User;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Dictionary;
+
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 
@@ -115,18 +117,23 @@ public class UserAccount{
         },"POST", ROUTE+"checkcode", jsonBody);
     }
 
-    public void create(final booleanResponse listener, String username, String code) {
+    public void create(final booleanResponse listener, Dictionary data) {
 
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("username", username);
-            jsonBody.put("code", code);
+            jsonBody.put("username", data.get("username"));
+            jsonBody.put("code", data.get("code"));
+            jsonBody.put("password", data.get("password"));
+            jsonBody.put("email", "");
+            jsonBody.put("apepat", data.get("apPat"));
+            jsonBody.put("apemat", data.get("apMat"));
+            jsonBody.put("nombres", data.get("nombres"));
         } catch (JSONException e) {}
 
         apiRequest.send(response -> {
             listener.onResponse(true);
 
-        },"POST", ROUTE+"checkcode", jsonBody);
+        },"POST", ROUTE+"c", jsonBody);
     }
 
     public void sendCodeUser(final booleanResponse listener, String username) {
@@ -140,5 +147,20 @@ public class UserAccount{
             listener.onResponse(true);
 
         },"POST", ROUTE+"sendcodeuser", jsonBody);
+    }
+
+    public void changeNewPassword(final booleanResponse listener, Dictionary data) {
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", data.get("username"));
+            jsonBody.put("code", data.get("code"));
+            jsonBody.put("password", data.get("password"));
+        } catch (JSONException e) {}
+
+        apiRequest.send(response -> {
+            listener.onResponse(true);
+
+        },"POST", ROUTE+"changenewpwd", jsonBody);
     }
 }
