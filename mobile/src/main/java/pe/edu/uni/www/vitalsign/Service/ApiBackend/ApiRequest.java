@@ -20,14 +20,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import pe.edu.uni.www.vitalsign.Service.Util.InterfaceService;
+
 public class ApiRequest{
 
-    public interface requestResponse {
-        void onSuccess(JSONObject result);
-    }
-
     //private static String url="http://18.224.27.30/api-sign/web/app.php";
-    private static String url="http://192.168.1.4/api-sign/web/app_dev.php";
+    private static String url="http://192.168.1.3/api-sign/web/app_dev.php";
     private Context context;
     private RequestQueue mQueue;
 
@@ -50,19 +48,21 @@ public class ApiRequest{
         this.mQueue.add(jsonObjectRequest);
     }
 
-    public void send(final requestResponse listener, String method, String route){
+    public void send(final InterfaceService.requestResponse listener, String method, String route){
         send(listener,method,route,null);
     }
 
-    public void send(final requestResponse listener, String method, String route, JSONObject jsonBody) {
+    public void send(final InterfaceService.requestResponse listener, String method, String route, JSONObject jsonBody) {
 
         int requestMethod;
         if(method.equals("GET")){
             requestMethod = Request.Method.GET;
         }else if(method.equals("POST")){
             requestMethod = Request.Method.POST;
-        }else if(method.equals("PUT")){
+        }else if(method.equals("PUT")) {
             requestMethod = Request.Method.PUT;
+        }else if(method.equals("PATCH")){
+            requestMethod = Request.Method.PATCH;
         }else if(method.equals("DELETE")){
             requestMethod = Request.Method.DELETE;
         }else{
@@ -70,41 +70,36 @@ public class ApiRequest{
         }
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(requestMethod,url + route, jsonBody,
-                new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    if(response.getBoolean("success")){
-                        listener.onSuccess(response);
-                    }else{
-                        Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
+                response -> {
+                    try {
+                        if(response.getBoolean("success")){
+                            listener.onSuccess(response);
+                        }else{
+                            Toast.makeText(context, response.getString("msg"), Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }}, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try {
-                    NetworkResponse response = error.networkResponse;
-                    /*
-                    String statusCode = String.valueOf(response.statusCode);
-                    Log.d("TAG", "Status Code: " + statusCode);
-                    */
-                    String jsonResponse = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                }, error -> {
+                    try {
+                        NetworkResponse response = error.networkResponse;
+                        /*
+                        String statusCode = String.valueOf(response.statusCode);
+                        Log.d("TAG", "Status Code: " + statusCode);
+                        */
+                        String jsonResponse = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 
-                    JSONObject resp = new JSONObject(jsonResponse);
-                    Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
+                        JSONObject resp = new JSONObject(jsonResponse);
+                        Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
 
-                } catch (UnsupportedEncodingException e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                } catch (JSONException e) {
-                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        }) {
+                    } catch (UnsupportedEncodingException e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json");
                 if (authToken != null && !authToken.isEmpty()) {

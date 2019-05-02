@@ -1,4 +1,4 @@
-package pe.edu.uni.www.vitalsign.Service.ApiBackend.User;
+package pe.edu.uni.www.vitalsign.Service.ApiBackend.MyAccount;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -12,28 +12,19 @@ import java.util.List;
 
 import pe.edu.uni.www.vitalsign.Model.Contact;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
+import pe.edu.uni.www.vitalsign.Service.Util.InterfaceService;
 
-public class UserContact {
+public class MyAccountContact {
 
-    public interface contactsResponse{
-        void onResponse(List<Contact> response);
-    }
-
-    public interface contactResponse{
-        void onResponse(Contact response);
-    }
-
-    public interface booleanResponse{
-        void onResponse(boolean response);
-    }
+    private static String ROUTE = "/myaccount/contact/";
 
     private ApiRequest apiRequest;
 
-    public  UserContact(ApiRequest apiRequest){
+    public MyAccountContact(ApiRequest apiRequest){
         this.apiRequest = apiRequest;
     }
 
-    public void list(final UserContact.contactsResponse listener) {
+    public void list(final InterfaceService.contactsResponse listener) {
 
         apiRequest.send(response -> {
             try {
@@ -46,10 +37,10 @@ public class UserContact {
             } catch (JSONException e) {
                 //listener.onResponse(false);
             }
-        },"GET", "/user/contact/l");
+        },"GET", ROUTE+"l");
     }
 
-    public void add(final UserContact.booleanResponse listener, Contact contact) {
+    public void add(final InterfaceService.booleanResponse listener, Contact contact) {
 
         JSONObject  jsonBody = new JSONObject();
         try {
@@ -69,10 +60,10 @@ public class UserContact {
                 //listener.onResponse(0);
                 listener.onResponse(false);
             }
-        },"POST", "/user/contact/c", jsonBody);
+        },"POST", ROUTE+"c", jsonBody);
     }
 
-    public void update(final UserContact.booleanResponse listener, Contact contact) {
+    public void update(final InterfaceService.booleanResponse listener, Contact contact) {
 
         JSONObject  jsonBody = new JSONObject();
         try {
@@ -83,14 +74,14 @@ public class UserContact {
         apiRequest.send(response -> {
                 listener.onResponse(true);
 
-        },"PUT", "/user/contact/u/"+contact.getId(), jsonBody);
+        },"PUT", ROUTE+"u/"+contact.getId(), jsonBody);
     }
 
-    public void delete(final UserContact.booleanResponse listener, int id) {
+    public void delete(final InterfaceService.booleanResponse listener, int id) {
 
         apiRequest.send(response -> {
                 listener.onResponse(true);
 
-        },"DELETE", "/user/contact/d/"+id);
+        },"DELETE", ROUTE+"d/"+id);
     }
 }

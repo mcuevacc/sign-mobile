@@ -14,23 +14,25 @@ public class NewAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_account);
 
-        Bundle bundle = getIntent().getExtras();
+        if (savedInstanceState == null){
+            Bundle bundle = getIntent().getExtras();
 
-        boolean isNewUser=false;
-        if(bundle!=null)
-            isNewUser = bundle.getBoolean("isNewUser");
+            boolean isNewUser=false;
+            if(bundle!=null)
+                isNewUser = bundle.getBoolean("isNewUser");
 
-        if (savedInstanceState == null) {
-            Bundle args = new Bundle();
-            args.putBoolean("isNewUser", isNewUser);
+            if (savedInstanceState == null) {
+                Bundle args = new Bundle();
+                args.putBoolean("isNewUser", isNewUser);
 
-            Fragment fragment = new NewAccountPhoneFragment();
-            fragment.setArguments(args);
+                Fragment fragment = new NewAccountPhoneFragment();
+                fragment.setArguments(args);
 
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.newAccount_frame, fragment)
-                    .commit();
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.newAccount_frame, fragment)
+                        .commit();
+            }
         }
     }
 }

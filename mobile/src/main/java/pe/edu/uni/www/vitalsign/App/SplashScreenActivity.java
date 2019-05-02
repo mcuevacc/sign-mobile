@@ -2,7 +2,6 @@ package pe.edu.uni.www.vitalsign.App;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -12,15 +11,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import pe.edu.uni.www.vitalsign.Activity.LoginActivity;
 import pe.edu.uni.www.vitalsign.Activity.MainActivity;
 
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
-import pe.edu.uni.www.vitalsign.Service.ApiBackend.User.UserAccount;
-import pe.edu.uni.www.vitalsign.Service.AppSignatureHashHelper;
+import pe.edu.uni.www.vitalsign.Service.ApiBackend.MyAccount.MyAccountInfo;
+import pe.edu.uni.www.vitalsign.Service.Util.AppSignatureHashHelper;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -34,7 +32,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     private Preference pref;
     private ApiRequest apiRequest;
-    private UserAccount userAccount;
+    private MyAccountInfo myAccountInfo;
 
     private Activity activity = this;
 
@@ -50,7 +48,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         // Apps Hash Key
         //Log.d("App", "Hash Key: "+appSignatureHashHelper.getAppSignatures().get(0));
 
-        checkPermission();
+        if (savedInstanceState == null)
+            checkPermission();
     }
 
     protected void checkPermission(){
@@ -65,18 +64,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("GPS and Send Sms permissions are required to do the task.");
                 builder.setTitle("Please grant those permissions");
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityCompat.requestPermissions(activity, LIST_PERMISSIONS, REQUEST_ID_PERMISSIONS);
-                    }
-                });
-                builder.setNeutralButton("Cancel",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        exit();
-                    }
-                });
+                builder.setPositiveButton("OK", (dialogInterface, i) -> ActivityCompat.requestPermissions(activity, LIST_PERMISSIONS, REQUEST_ID_PERMISSIONS));
+                builder.setNeutralButton("Cancel", (dialogInterface, i) -> exit());
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
@@ -98,10 +87,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 }else{
                     Toast.makeText(this, "No se otorgó los permisos necesarios", Toast.LENGTH_SHORT).show();
 
-                    runnable = new Runnable(){
-                        @Override
-                        public void run(){exit();}
-                    };
+                    runnable = () -> exit();
                     handler.postDelayed(runnable, 2000);
                 }
                 break;
@@ -118,18 +104,15 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         if( !TextUtils.isEmpty(authToken) ){
             apiRequest = ((Globals)getApplication()).getApiRequest();
-            userAccount = new UserAccount(apiRequest,pref);
+            myAccountInfo = new MyAccountInfo(apiRequest,pref);
 
-            userAccount.toking(new UserAccount.booleanResponse() {
-                @Override
-                public void onResponse(boolean resp) {
-                    if(resp){
-                        startActivity(intentMain);
-                    } else {
-                        startActivity(intentLogin);
-                    }
-                    finish();
+            myAccountInfo.toking(resp -> {
+                if(resp){
+                    startActivity(intentMain);
+                } else {
+                    startActivity(intentLogin);
                 }
+                finish();
             });
         }else {
             startActivity(intentLogin);

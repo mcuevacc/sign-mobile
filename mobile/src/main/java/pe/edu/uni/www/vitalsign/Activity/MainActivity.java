@@ -1,5 +1,8 @@
 package pe.edu.uni.www.vitalsign.Activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,18 +18,21 @@ import android.view.View;
 import android.content.Intent;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import pe.edu.uni.www.vitalsign.Fragment.ContactFragment;
 import pe.edu.uni.www.vitalsign.Fragment.HomeFragment;
 import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.R;
+import pe.edu.uni.www.vitalsign.Service.LocationService;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 import pe.edu.uni.www.vitalsign.Service.Util.Util;
-
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Preference pref;
+    private BroadcastReceiver broadcastReceiver;
+
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -37,7 +43,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initUI();
+        if (savedInstanceState == null)
+            initUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Intent i =new Intent(getApplicationContext(), LocationService.class);
+        startService(i);
+
+        if(broadcastReceiver == null){
+            broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String coordenadas = (String) intent.getExtras().get("coordinates");
+                    Toast.makeText(getApplicationContext(),coordenadas, Toast.LENGTH_SHORT).show();
+                }
+            };
+        }
+        registerReceiver(broadcastReceiver,new IntentFilter("location_update"));
     }
 
     private void initUI() {
@@ -159,4 +185,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Intent i = new Intent(getApplicationContext(),LocationService.class);
+        stopService(i);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(broadcastReceiver != null){
+            unregisterReceiver(broadcastReceiver);
+        }
+    }
+
+    /*
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //outState.putInt("AStringKey", variableData);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        //variableData = savedInstanceState.getInt("AStringKey");
+    }
+    */
 }

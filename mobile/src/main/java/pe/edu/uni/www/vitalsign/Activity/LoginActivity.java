@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -31,8 +30,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        initElement();
+        if (savedInstanceState == null)
+            initUI();
+    }
 
+    private void initUI() {
+        pref = new Preference(((Globals)getApplication()).getSharedPref());
+        apiRequest = ((Globals)getApplication()).getApiRequest();
+        userAccount = new UserAccount(apiRequest,pref);
+
+        editTextUsername = (EditText) findViewById(R.id.editTextUsername);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        btnLogin = (Button) findViewById(R.id.buttonLogin);
         btnLogin.setOnClickListener(view -> {
             final String username = editTextUsername.getText().toString();
             final String password = editTextPassword.getText().toString();
@@ -43,32 +52,22 @@ public class LoginActivity extends AppCompatActivity {
 
             saveOnPreferences(username);
         });
-        setCredentialsIfExist();
 
+        btnCreateAccount = (Button) findViewById(R.id.buttonCreateAccount);
         btnCreateAccount.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), NewAccountActivity.class);
             intent.putExtra("isNewUser", true);
             startActivity(intent);
         });
 
+        btnForgot = (Button) findViewById(R.id.buttonForgot);
         btnForgot.setOnClickListener(view -> {
             Intent intent = new Intent(getApplicationContext(), NewAccountActivity.class);
             intent.putExtra("isNewUser", false);
             startActivity(intent);
         });
-    }
 
-    private void initElement() {
-        pref = new Preference(((Globals)getApplication()).getSharedPref());
-        apiRequest = ((Globals)getApplication()).getApiRequest();
-        userAccount = new UserAccount(apiRequest,pref);
-
-        editTextUsername = (EditText) findViewById(R.id.editTextUsername);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        btnLogin = (Button) findViewById(R.id.buttonLogin);
-
-        btnCreateAccount = (Button) findViewById(R.id.buttonCreateAccount);
-        btnForgot = (Button) findViewById(R.id.buttonForgot);
+        setCredentialsIfExist();
     }
 
     private void setCredentialsIfExist() {

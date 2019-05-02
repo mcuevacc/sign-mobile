@@ -23,14 +23,14 @@ import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.Model.Contact;
 import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
-import pe.edu.uni.www.vitalsign.Service.ApiBackend.User.UserContact;
+import pe.edu.uni.www.vitalsign.Service.ApiBackend.MyAccount.MyAccountContact;
 
 public class ContactFragment extends Fragment implements DialogInterface.OnClickListener{
 
     private View view;
 
     private ApiRequest apiRequest;
-    private UserContact userContact;
+    private MyAccountContact myAccountContact;
 
     private List<Contact> contacts;
     private ContactAdapter adapter;
@@ -70,7 +70,7 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
 
     private void initUI() {
         apiRequest = ((Globals)getActivity().getApplicationContext()).getApiRequest();
-        userContact = new UserContact(apiRequest);
+        myAccountContact = new MyAccountContact(apiRequest);
 
         fab = view.findViewById(R.id.fab);
 
@@ -158,7 +158,7 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
             if(crudContact=='c'){
                 //Create
                 Contact newContact = new Contact(editTextName.getText().toString(), editTextNumber.getText().toString());
-                userContact.add(resp -> {
+                myAccountContact.add(resp -> {
                     if(resp){
                         contacts.add(0,newContact);
                         adapter.notifyItemInserted(0);
@@ -171,7 +171,7 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
                 editContact.setName(editTextName.getText().toString());
                 editContact.setNumber(editTextNumber.getText().toString());
 
-                userContact.update(resp -> {
+                myAccountContact.update(resp -> {
                     if(resp){
                         adapter.notifyItemChanged(positionContact);
                         //layoutManager.scrollToPosition(0);
@@ -180,7 +180,7 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
             }else if(crudContact=='d'){
                 //Delete
                 Contact deleteContact = contacts.get(positionContact);
-                userContact.delete(resp -> {
+                myAccountContact.delete(resp -> {
                     if(resp){
                         contacts.remove(positionContact);
                         adapter.notifyItemRemoved(positionContact);
@@ -193,7 +193,7 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
     }
 
     private void getAllContacts() {
-        userContact.list(list -> {
+        myAccountContact.list(list -> {
             contacts=list;
             adapter.updateList(contacts);
         });

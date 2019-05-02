@@ -6,13 +6,10 @@ import org.json.JSONObject;
 import java.util.Dictionary;
 
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
+import pe.edu.uni.www.vitalsign.Service.Util.InterfaceService;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 
 public class UserAccount{
-
-    public interface booleanResponse{
-        void onResponse(boolean response);
-    }
 
     private static String ROUTE = "/user/account/";
 
@@ -28,7 +25,7 @@ public class UserAccount{
         this.pref = pref;
     }
 
-    public void login(final booleanResponse listener, String username, String password) {
+    public void login(final InterfaceService.booleanResponse listener, String username, String password) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -54,26 +51,7 @@ public class UserAccount{
         },"POST", ROUTE+"login", jsonBody);
     }
 
-    public void toking(final booleanResponse listener) {
-        apiRequest.setAuthToken(pref.getDataPref("authToken"));
-        apiRequest.send(response -> {
-            try {
-                String authToken = response.getString("authToken");
-                pref.setDataPref("authToken", authToken);
-                apiRequest.setAuthToken(authToken);
-
-                JSONObject profile = response.getJSONObject("profile");
-                pref.setDataPref("email", profile.getString("email"));
-
-                listener.onResponse(true);
-
-            } catch (JSONException e) {
-                listener.onResponse(false);
-            }
-        },"GET", ROUTE+"toking");
-    }
-
-    public void exist(final booleanResponse listener, String username) {
+    public void exist(final InterfaceService.booleanResponse listener, String username) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -90,7 +68,7 @@ public class UserAccount{
         },"POST", ROUTE+"exist", jsonBody);
     }
 
-    public void sendCode(final booleanResponse listener, String username) {
+    public void sendCode(final InterfaceService.booleanResponse listener, String username) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -103,7 +81,7 @@ public class UserAccount{
         },"POST", ROUTE+"sendcode", jsonBody);
     }
 
-    public void checkCode(final booleanResponse listener, String username, String code) {
+    public void checkCode(final InterfaceService.booleanResponse listener, String username, String code) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -117,7 +95,7 @@ public class UserAccount{
         },"POST", ROUTE+"checkcode", jsonBody);
     }
 
-    public void create(final booleanResponse listener, Dictionary data) {
+    public void create(final InterfaceService.booleanResponse listener, Dictionary data) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -136,7 +114,7 @@ public class UserAccount{
         },"POST", ROUTE+"c", jsonBody);
     }
 
-    public void sendCodeUser(final booleanResponse listener, String username) {
+    public void sendCodeUser(final InterfaceService.booleanResponse listener, String username) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -149,7 +127,7 @@ public class UserAccount{
         },"POST", ROUTE+"sendcodeuser", jsonBody);
     }
 
-    public void changeNewPassword(final booleanResponse listener, Dictionary data) {
+    public void setNewPassword(final InterfaceService.booleanResponse listener, Dictionary data) {
 
         JSONObject jsonBody = new JSONObject();
         try {
@@ -161,6 +139,6 @@ public class UserAccount{
         apiRequest.send(response -> {
             listener.onResponse(true);
 
-        },"POST", ROUTE+"changenewpwd", jsonBody);
+        },"POST", ROUTE+"setnewpwd", jsonBody);
     }
 }

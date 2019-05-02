@@ -1,6 +1,5 @@
 package pe.edu.uni.www.vitalsign.Fragment;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -12,13 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 
 import pe.edu.uni.www.vitalsign.Activity.LoginActivity;
-import pe.edu.uni.www.vitalsign.Activity.MainActivity;
 import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
@@ -125,7 +122,7 @@ public class NewAccountInfoFragment extends Fragment implements View.OnClickList
                 goToLogin();
             },info);
         }else{
-            userAccount.changeNewPassword(response -> {
+            userAccount.setNewPassword(response -> {
                 goToLogin();
             },info);
         }

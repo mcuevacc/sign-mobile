@@ -1,4 +1,4 @@
-package pe.edu.uni.www.vitalsign.Service;
+package pe.edu.uni.www.vitalsign.Service.Util;
 
 import android.annotation.TargetApi;
 import android.content.Context;
