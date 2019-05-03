@@ -62,8 +62,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                     || ActivityCompat.shouldShowRequestPermissionRationale(this,CODE_SEND_SMS) ){
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setMessage("GPS and Send Sms permissions are required to do the task.");
                 builder.setTitle("Please grant those permissions");
+                builder.setMessage("GPS and Send Sms permissions are required to do the task.");
                 builder.setPositiveButton("OK", (dialogInterface, i) -> ActivityCompat.requestPermissions(activity, LIST_PERMISSIONS, REQUEST_ID_PERMISSIONS));
                 builder.setNeutralButton("Cancel", (dialogInterface, i) -> exit());
                 AlertDialog dialog = builder.create();

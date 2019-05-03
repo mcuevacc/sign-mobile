@@ -1,6 +1,8 @@
 package pe.edu.uni.www.vitalsign.Service;
 
 import android.Manifest;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,10 +12,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.widget.Toast;
 
 import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
@@ -44,53 +44,48 @@ public class LocationService extends Service implements LocationListener {
         apiRequest = ((Globals) getApplication()).getApiRequest();
         myAccountInfo = new MyAccountInfo(apiRequest);
 
-        /*
-        Location net_loc=null, gps_loc=null;
-        if(gps_enabled)
-            gps_loc=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if(network_enabled)
-            net_loc=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        //if there are both values use the latest one
-        if(gps_loc!=null && net_loc!=null){
-            if(gps_loc.getTime()>net_loc.getTime())
-                locationResult.gotLocation(gps_loc);
-            else
-                locationResult.gotLocation(net_loc);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             return;
-        }
-
-        if(gps_loc!=null){
-            locationResult.gotLocation(gps_loc);
-            return;
-        }
-        if(net_loc!=null){
-            locationResult.gotLocation(net_loc);
-            return;
-        }
-        locationResult.gotLocation(null);
-        */
 
         if (locationManager == null)
             locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
-        //try{
         gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        //}catch(Exception ex){}
 
         if (!gps_enabled && !network_enabled) {
-            return;
+            showLocationSettings();
         }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+        Location gps_loc, net_loc, last_loc;
+        gps_loc=locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        net_loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        if(gps_loc!=null || net_loc!=null){
+
+            if(gps_loc!=null && net_loc!=null){
+                if(gps_loc.getTime()>net_loc.getTime())
+                    last_loc = gps_loc;
+                else
+                    last_loc = net_loc;
+            }else if(gps_loc!=null)
+                last_loc = gps_loc;
+            else
+                last_loc = net_loc;
+
+            setLocation(last_loc.getLatitude(),last_loc.getLongitude());
         }
 
-        if (gps_enabled)
+        if(gps_enabled)
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
         if(network_enabled)
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
+    }
+
+    private void showLocationSettings() {
+          Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+          startActivity(intent);
     }
 
     @Override
@@ -106,9 +101,12 @@ public class LocationService extends Service implements LocationListener {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
-        Intent i = new Intent("location_update");
-        i.putExtra("coordinates",latitude+" "+longitude);
-        sendBroadcast(i);
+        Intent intent = new Intent("location_update");
+        Bundle extras = new Bundle();
+        extras.putString("latitude", String.valueOf(latitude));
+        extras.putString("longitude", String.valueOf(longitude));
+        intent.putExtras(extras);
+        sendBroadcast(intent);
 
         setLocation(latitude, longitude);
     }
@@ -125,14 +123,12 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public void onProviderDisabled(String provider) {
-        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+        showLocationSettings();
     }
 
     public void setLocation(double latitude, double longitude){
         myAccountInfo.setLocation(response -> {
-           //nada
+
         },latitude,longitude);
     }
 }

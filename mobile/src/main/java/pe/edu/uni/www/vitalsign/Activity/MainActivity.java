@@ -31,7 +31,7 @@ import pe.edu.uni.www.vitalsign.Service.Util.Util;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private Preference pref;
-    private BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiver locationReceiver;
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -54,16 +54,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent i =new Intent(getApplicationContext(), LocationService.class);
         startService(i);
 
-        if(broadcastReceiver == null){
-            broadcastReceiver = new BroadcastReceiver() {
+        if(locationReceiver == null){
+            locationReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    String coordenadas = (String) intent.getExtras().get("coordinates");
-                    Toast.makeText(getApplicationContext(),coordenadas, Toast.LENGTH_SHORT).show();
+                    Bundle extras = intent.getExtras();
+                    String latitude = extras.getString("latitude");
+                    String longitude = extras.getString("longitude");
+                    //Toast.makeText(getApplicationContext(),latitude+" "+longitude, Toast.LENGTH_SHORT).show();
                 }
             };
         }
-        registerReceiver(broadcastReceiver,new IntentFilter("location_update"));
+        registerReceiver(locationReceiver,new IntentFilter("location_update"));
     }
 
     private void initUI() {
@@ -197,9 +199,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(broadcastReceiver != null){
-            unregisterReceiver(broadcastReceiver);
-        }
+        if(locationReceiver != null)
+            unregisterReceiver(locationReceiver);
     }
 
     /*
