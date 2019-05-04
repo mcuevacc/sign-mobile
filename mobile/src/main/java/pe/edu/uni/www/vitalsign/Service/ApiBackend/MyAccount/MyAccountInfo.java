@@ -54,4 +54,11 @@ public class MyAccountInfo  {
 
         },"PATCH", ROUTE+"setlocation", jsonBody);
     }
+
+    public void sendAlert(final InterfaceService.booleanResponse listener) {
+        apiRequest.send(response -> {
+            listener.onResponse(true);
+
+        },"POST", ROUTE+"sendalert");
+    }
 }

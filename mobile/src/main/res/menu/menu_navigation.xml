@@ -18,8 +18,15 @@
             android:title="Contacts" />
     </group>
 
+    <group android:id="@+id/grp3" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/baseline_map_white_24"
+            android:title="Maps" />
+    </group>
 
-    <group android:id="@+id/grp3">
+
+    <group android:id="@+id/grp4">
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/baseline_profile_card_black_24"

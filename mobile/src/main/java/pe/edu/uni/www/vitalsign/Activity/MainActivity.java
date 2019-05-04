@@ -23,6 +23,7 @@ import android.widget.Toast;
 import pe.edu.uni.www.vitalsign.Fragment.ContactFragment;
 import pe.edu.uni.www.vitalsign.Fragment.HomeFragment;
 import pe.edu.uni.www.vitalsign.App.Globals;
+import pe.edu.uni.www.vitalsign.Fragment.MapFragment;
 import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.LocationService;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
@@ -135,6 +136,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_contact:
                 fragment = new ContactFragment();
+                fragmentTransaction = true;
+                break;
+             case R.id.nav_map:
+                fragment = new MapFragment();
                 fragmentTransaction = true;
                 break;
             case R.id.nav_logout:

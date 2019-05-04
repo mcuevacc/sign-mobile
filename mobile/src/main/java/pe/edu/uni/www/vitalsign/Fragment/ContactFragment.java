@@ -27,7 +27,7 @@ import pe.edu.uni.www.vitalsign.Service.ApiBackend.MyAccount.MyAccountContact;
 
 public class ContactFragment extends Fragment implements DialogInterface.OnClickListener{
 
-    private View view;
+    private View rootView;
 
     private ApiRequest apiRequest;
     private MyAccountContact myAccountContact;
@@ -53,7 +53,7 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_contact, container, false);
+        rootView = inflater.inflate(R.layout.fragment_contact, container, false);
 
         initUI();
 
@@ -65,16 +65,16 @@ public class ContactFragment extends Fragment implements DialogInterface.OnClick
 
         initActions();
 
-        return view;
+        return rootView;
     }
 
     private void initUI() {
         apiRequest = ((Globals)getActivity().getApplicationContext()).getApiRequest();
         myAccountContact = new MyAccountContact(apiRequest);
 
-        fab = view.findViewById(R.id.fab);
+        fab = rootView.findViewById(R.id.fab);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewContact);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerViewContact);
         layoutManager = new LinearLayoutManager(getContext());
 
         contacts = new ArrayList<Contact>();

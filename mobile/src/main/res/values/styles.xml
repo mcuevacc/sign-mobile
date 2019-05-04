@@ -66,6 +66,11 @@
 
     <!--PSButton Colors-->
 
+    <style name="PSButton.Alert" parent="@style/Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/md_red_700</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="PSButton.Send" parent="@style/Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/colorPrimary</item>
     </style>

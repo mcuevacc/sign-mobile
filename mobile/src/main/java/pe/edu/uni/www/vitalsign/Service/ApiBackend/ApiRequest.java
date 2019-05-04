@@ -24,8 +24,8 @@ import pe.edu.uni.www.vitalsign.Service.Util.InterfaceService;
 
 public class ApiRequest{
 
-    //private static String url="http://18.224.27.30/api-sign/web/app.php";
-    private static String url="http://192.168.1.3/api-sign/web/app_dev.php";
+    private static String url="http://3.14.141.227/api-sign/web/app.php";
+    //private static String url="http://192.168.1.3/api-sign/web/app_dev.php";
     private Context context;
     private RequestQueue mQueue;
 
@@ -83,15 +83,18 @@ public class ApiRequest{
                 }, error -> {
                     try {
                         NetworkResponse response = error.networkResponse;
-                        /*
+
                         String statusCode = String.valueOf(response.statusCode);
-                        Log.d("TAG", "Status Code: " + statusCode);
-                        */
+                        //Log.d("TAG", "Status Code: " + statusCode);
+
                         String jsonResponse = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
 
                         JSONObject resp = new JSONObject(jsonResponse);
-                        Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
-
+                        if(statusCode.contentEquals("401")){
+                            listener.onSuccess(resp);
+                        }else{
+                            Toast.makeText(context, resp.getString("msg"), Toast.LENGTH_SHORT).show();
+                        }
                     } catch (UnsupportedEncodingException e) {
                         Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
