@@ -26,9 +26,10 @@ public class SplashScreenActivity extends AppCompatActivity {
     private static final int REQUEST_ID_PERMISSIONS = 1234;
 
     private static final String CODE_ACCESS_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String CODE_SEND_SMS = Manifest.permission.SEND_SMS;
+    //private static final String CODE_SEND_SMS = Manifest.permission.SEND_SMS;
 
-    private static final String [] LIST_PERMISSIONS = {CODE_ACCESS_LOCATION,CODE_SEND_SMS};
+    //private static final String [] LIST_PERMISSIONS = {CODE_ACCESS_LOCATION,CODE_SEND_SMS};
+    private static final String [] LIST_PERMISSIONS = {CODE_ACCESS_LOCATION};
 
     private Preference pref;
     private ApiRequest apiRequest;
@@ -54,12 +55,19 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     protected void checkPermission(){
 
-        if( ContextCompat.checkSelfPermission(this, CODE_ACCESS_LOCATION)
+         /*
+         if( ContextCompat.checkSelfPermission(this, CODE_ACCESS_LOCATION)
                 + ContextCompat.checkSelfPermission(this, CODE_SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED ){
+         */
 
+        if( ContextCompat.checkSelfPermission(this, CODE_ACCESS_LOCATION)
+                != PackageManager.PERMISSION_GRANTED ){
+            /*
             if( ActivityCompat.shouldShowRequestPermissionRationale(this,CODE_ACCESS_LOCATION)
                     || ActivityCompat.shouldShowRequestPermissionRationale(this,CODE_SEND_SMS) ){
+            */
+            if( ActivityCompat.shouldShowRequestPermissionRationale(this,CODE_ACCESS_LOCATION) ){
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("Please grant those permissions");
@@ -81,7 +89,8 @@ public class SplashScreenActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         switch (requestCode){
             case REQUEST_ID_PERMISSIONS: {
-                if( grantResults.length>0 && (grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED) ){
+                //if( grantResults.length>0 && (grantResults[0] + grantResults[1] == PackageManager.PERMISSION_GRANTED) ){
+                if( grantResults.length>0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED) ){
                     //Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
                     init();
                 }else{
