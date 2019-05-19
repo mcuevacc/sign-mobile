@@ -48,6 +48,7 @@
         <activity android:name=".Activity.NewAccountActivity" />
 
         <service android:name=".Service.LocationService" />
+        <service android:name=".Service.SocketService" />
         <service
             android:name=".Service.MessageService"
             android:enabled="true"

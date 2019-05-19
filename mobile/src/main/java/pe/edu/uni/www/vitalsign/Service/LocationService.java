@@ -40,7 +40,6 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public void onCreate() {
-
         apiRequest = ((Globals) getApplication()).getApiRequest();
         myAccountInfo = new MyAccountInfo(apiRequest);
 

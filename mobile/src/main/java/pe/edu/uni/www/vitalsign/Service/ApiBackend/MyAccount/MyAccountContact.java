@@ -28,9 +28,9 @@ public class MyAccountContact {
 
         apiRequest.send(response -> {
             try {
-                String contactStr = (response.getJSONArray("entidad")).toString();
+                String contactsStr = (response.getJSONArray("entidad")).toString();
                 Type listType = new TypeToken<List<Contact>>() {}.getType();
-                List<Contact> contacts = new Gson().fromJson(contactStr, listType);
+                List<Contact> contacts = new Gson().fromJson(contactsStr, listType);
                 Collections.reverse(contacts);
 
                 listener.onResponse(contacts);

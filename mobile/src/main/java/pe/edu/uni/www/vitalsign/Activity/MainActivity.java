@@ -26,6 +26,7 @@ import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.Fragment.MapFragment;
 import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.LocationService;
+import pe.edu.uni.www.vitalsign.Service.SocketService;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 import pe.edu.uni.www.vitalsign.Service.Util.Util;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private Preference pref;
     private BroadcastReceiver locationReceiver;
+    private BroadcastReceiver socketReceiver;
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -52,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
 
-        Intent i =new Intent(getApplicationContext(), LocationService.class);
-        startService(i);
+        Intent g =new Intent(getApplicationContext(), LocationService.class);
+        startService(g);
 
         if(locationReceiver == null){
             locationReceiver = new BroadcastReceiver() {
@@ -67,6 +69,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             };
         }
         registerReceiver(locationReceiver,new IntentFilter("location_update"));
+
+        Intent s =new Intent(getApplicationContext(), SocketService.class);
+        startService(s);
+        if(socketReceiver == null){
+            socketReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    /*
+                    Bundle extras = intent.getExtras();
+                    String latitude = extras.getString("latitude");
+                    String longitude = extras.getString("longitude");
+                    */
+                    //Toast.makeText(getApplicationContext(),latitude+" "+longitude, Toast.LENGTH_SHORT).show();
+                }
+            };
+        }
+        registerReceiver(locationReceiver,new IntentFilter("socket_alert"));
     }
 
     private void initUI() {
@@ -197,8 +216,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
 
-        Intent i = new Intent(getApplicationContext(),LocationService.class);
-        stopService(i);
+        Intent g = new Intent(getApplicationContext(),LocationService.class);
+        stopService(g);
+
+        Intent s = new Intent(getApplicationContext(), SocketService.class);
+        stopService(s);
     }
 
     @Override
@@ -206,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
         if(locationReceiver != null)
             unregisterReceiver(locationReceiver);
+
+        if(socketReceiver != null)
+            unregisterReceiver(socketReceiver);
     }
 
     /*
