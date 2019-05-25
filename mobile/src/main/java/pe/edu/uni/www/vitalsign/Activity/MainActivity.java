@@ -20,10 +20,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 import pe.edu.uni.www.vitalsign.Fragment.ContactFragment;
 import pe.edu.uni.www.vitalsign.Fragment.HomeFragment;
 import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.Fragment.MapFragment;
+import pe.edu.uni.www.vitalsign.Model.Point;
+import pe.edu.uni.www.vitalsign.Model.User;
 import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.LocationService;
 import pe.edu.uni.www.vitalsign.Service.SocketService;
@@ -32,14 +36,22 @@ import pe.edu.uni.www.vitalsign.Service.Util.Util;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public interface AlertListener {
+        void initAlert(Long id);
+        void endAlert(Long id);
+    }
+
     private Preference pref;
-    private BroadcastReceiver locationReceiver;
-    private BroadcastReceiver socketReceiver;
+    private LocationListener locationReceiver;
+    private SocketListener socketReceiver;
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private TextView name;
+
+    private HashMap<Long,User> alertUsers;
+    private AlertListener alertListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,40 +68,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent g =new Intent(getApplicationContext(), LocationService.class);
         startService(g);
-
-        if(locationReceiver == null){
-            locationReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    Bundle extras = intent.getExtras();
-                    String latitude = extras.getString("latitude");
-                    String longitude = extras.getString("longitude");
-                    //Toast.makeText(getApplicationContext(),latitude+" "+longitude, Toast.LENGTH_SHORT).show();
-                }
-            };
-        }
+        if(locationReceiver == null)
+            locationReceiver = new LocationListener();
         registerReceiver(locationReceiver,new IntentFilter("location_update"));
 
         Intent s =new Intent(getApplicationContext(), SocketService.class);
         startService(s);
-        if(socketReceiver == null){
-            socketReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    /*
-                    Bundle extras = intent.getExtras();
-                    String latitude = extras.getString("latitude");
-                    String longitude = extras.getString("longitude");
-                    */
-                    //Toast.makeText(getApplicationContext(),latitude+" "+longitude, Toast.LENGTH_SHORT).show();
-                }
-            };
+        if(socketReceiver == null)
+            socketReceiver = new SocketListener();
+        registerReceiver(socketReceiver,new IntentFilter("socket_alert_init"));
+        registerReceiver(socketReceiver,new IntentFilter("socket_alert_end"));
+    }
+
+    private class LocationListener extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if( intent.getAction().equals("location_update") ){
+                Point location = extras.getParcelable("pe.edu.uni.www.vitalsign.Model.Point");
+                //Toast.makeText(getApplicationContext(),location.getLatitude()+" "+location.getLongitude(), Toast.LENGTH_SHORT).show();
+            }
         }
-        registerReceiver(locationReceiver,new IntentFilter("socket_alert"));
+    }
+
+    private class SocketListener extends BroadcastReceiver {
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if( intent.getAction().equals("socket_alert_init") ){
+                User user = extras.getParcelable("pe.edu.uni.www.vitalsign.Model.User");
+                Long id = Long.parseLong(user.getId());
+                alertUsers.put(id,user);
+                Toast.makeText(getApplicationContext(),"Recibido alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
+                if(alertListener!=null){
+                    Toast.makeText(getApplicationContext(),"Enviando a map alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
+                    alertListener.initAlert(id);
+                }
+                //Toast.makeText(getApplicationContext(),"Recibido alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
+            }else if( intent.getAction().equals("socket_alert_end") ){
+                /*
+                String id = extras.getParcelable("id");
+                if( alertUsers.containsKey(id) ){
+                    alertUsers.remove(id);
+                }
+                */
+            }
+        }
     }
 
     private void initUI() {
         pref = new Preference(((Globals)this.getApplication()).getSharedPref());
+        alertUsers = new HashMap<Long,User>();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         initToolbar();
@@ -115,6 +142,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         initUsername();
         setFragmentByDefault();
+    }
+
+    public HashMap<Long,User> getAlertUsers(){
+        return this.alertUsers;
+    }
+
+    public void setAlertListener(AlertListener alertListener){
+        this.alertListener = alertListener;
     }
 
     public void initUsername(){
@@ -147,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         boolean fragmentTransaction = false;
         Fragment fragment = null;
+        alertListener = null;
 
         switch (item.getItemId()) {
             case R.id.nav_home:
@@ -232,18 +268,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(socketReceiver != null)
             unregisterReceiver(socketReceiver);
     }
-
-    /*
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //outState.putInt("AStringKey", variableData);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
-        super.onRestoreInstanceState(savedInstanceState);
-        //variableData = savedInstanceState.getInt("AStringKey");
-    }
-    */
 }

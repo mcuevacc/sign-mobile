@@ -79,20 +79,13 @@ public class SocketService extends Service {
             String userStr = (data.getJSONObject("user")).toString();
             Type listType = new TypeToken<User>() {}.getType();
             User user = new Gson().fromJson(userStr, listType);
+
+            Intent intent = new Intent("socket_alert_init");
+            intent.putExtra("pe.edu.uni.www.vitalsign.Model.User",user);
+            sendBroadcast(intent);
         } catch (JSONException e) {
             return;
         }
-
-        /*
-        Intent intent = new Intent("location_update");
-        Bundle extras = new Bundle();
-        extras.putString("latitude", String.valueOf(latitude));
-        extras.putString("longitude", String.valueOf(longitude));
-        intent.putExtras(extras);
-        sendBroadcast(intent);
-
-        setLocation(latitude, longitude);
-        */
     }
 
     @Override

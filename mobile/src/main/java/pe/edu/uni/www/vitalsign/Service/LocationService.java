@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
 import pe.edu.uni.www.vitalsign.App.Globals;
+import pe.edu.uni.www.vitalsign.Model.Point;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.MyAccount.MyAccountInfo;
 
@@ -72,7 +73,7 @@ public class LocationService extends Service implements LocationListener {
             else
                 last_loc = net_loc;
 
-            setLocation(last_loc.getLatitude(),last_loc.getLongitude());
+            setLocation(new Point(last_loc.getLatitude(),last_loc.getLongitude()));
         }
 
         if(gps_enabled)
@@ -97,17 +98,12 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-
+        Point point = new Point(location.getLatitude(),location.getLongitude());
         Intent intent = new Intent("location_update");
-        Bundle extras = new Bundle();
-        extras.putString("latitude", String.valueOf(latitude));
-        extras.putString("longitude", String.valueOf(longitude));
-        intent.putExtras(extras);
+        intent.putExtra("pe.edu.uni.www.vitalsign.Model.Point",point);
         sendBroadcast(intent);
 
-        setLocation(latitude, longitude);
+        setLocation(point);
     }
 
     @Override
@@ -125,9 +121,9 @@ public class LocationService extends Service implements LocationListener {
         showLocationSettings();
     }
 
-    public void setLocation(double latitude, double longitude){
+    public void setLocation(Point point){
         myAccountInfo.setLocation(response -> {
 
-        },latitude,longitude);
+        },point.getLatitude(),point.getLongitude());
     }
 }
