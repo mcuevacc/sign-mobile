@@ -97,19 +97,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 User user = extras.getParcelable("pe.edu.uni.www.vitalsign.Model.User");
                 Long id = Long.parseLong(user.getId());
                 alertUsers.put(id,user);
-                Toast.makeText(getApplicationContext(),"Recibido alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"Recibido inicio de alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
                 if(alertListener!=null){
-                    Toast.makeText(getApplicationContext(),"Enviando a map alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),"Enviando a map alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
                     alertListener.initAlert(id);
                 }
-                //Toast.makeText(getApplicationContext(),"Recibido alerta de user: "+user.getUsername(), Toast.LENGTH_SHORT).show();
             }else if( intent.getAction().equals("socket_alert_end") ){
-                /*
-                String id = extras.getParcelable("id");
+                Long id = extras.getLong("id");
+                //Toast.makeText(getApplicationContext(),"Recibido fin de alerta de user: "+id, Toast.LENGTH_SHORT).show();
                 if( alertUsers.containsKey(id) ){
                     alertUsers.remove(id);
+                    if(alertListener!=null){
+                        //Toast.makeText(getApplicationContext(),"Elimiando del map alerta de user: "+id, Toast.LENGTH_SHORT).show();
+                        alertListener.endAlert(id);
+                    }
                 }
-                */
             }
         }
     }

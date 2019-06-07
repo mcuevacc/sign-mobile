@@ -31,6 +31,10 @@ public class SocketService extends Service {
     private Socket mSocket;
     private Preference pref;
 
+    private static String ALERT_INIT = "alert_init";
+    private static String ALERT_UPDATE = "alert_update";
+    private static String ALERT_END = "alert_end";
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -62,8 +66,12 @@ public class SocketService extends Service {
                     String type;
                     try {
                         type = data.getString("type");
-                        if(type.equals("alert")){
-                            sendAlert(data);
+                        if(type.equals(ALERT_INIT)){
+                            sendAlertInit(data);
+                        }else if(type.equals(ALERT_UPDATE)){
+                            sendAlertInit(data);
+                        }else if(type.equals(ALERT_END)){
+                            sendAlertEnd(data);
                         }
                     } catch (JSONException e) {
                         return;
@@ -74,7 +82,7 @@ public class SocketService extends Service {
         }
     };
 
-    public void sendAlert(JSONObject data){
+    public void sendAlertInit(JSONObject data){
         try {
             String userStr = (data.getJSONObject("user")).toString();
             Type listType = new TypeToken<User>() {}.getType();
@@ -82,6 +90,17 @@ public class SocketService extends Service {
 
             Intent intent = new Intent("socket_alert_init");
             intent.putExtra("pe.edu.uni.www.vitalsign.Model.User",user);
+            sendBroadcast(intent);
+        } catch (JSONException e) {
+            return;
+        }
+    }
+
+    public void sendAlertEnd(JSONObject data){
+        try {
+            Long id = data.getLong("id");
+            Intent intent = new Intent("socket_alert_end");
+            intent.putExtra("id",id);
             sendBroadcast(intent);
         } catch (JSONException e) {
             return;
