@@ -5,20 +5,21 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.fragment.app.Fragment;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.content.Intent;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -33,6 +34,7 @@ import pe.edu.uni.www.vitalsign.Service.LocationService;
 import pe.edu.uni.www.vitalsign.Service.SocketService;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
 import pe.edu.uni.www.vitalsign.Service.Util.Util;
+import pe.edu.uni.www.vitalsign.Service.WearableService;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,9 +43,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         void endAlert(Long id);
     }
 
+    public interface PulseListener {
+        void changePulse(int pulse);
+    }
+
     private Preference pref;
     private LocationListener locationReceiver;
     private SocketListener socketReceiver;
+    private WearableListener wearableReceiver;
 
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
@@ -53,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<Long,User> alertUsers;
     private AlertListener alertListener;
 
+    private PulseListener pulseListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,19 +69,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (savedInstanceState == null)
             initUI();
+        if(wearableReceiver == null)
+            wearableReceiver = new WearableListener();
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(wearableReceiver, new IntentFilter("pulse_change"));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        Intent g =new Intent(getApplicationContext(), LocationService.class);
+        Intent g = new Intent(getApplicationContext(), LocationService.class);
         startService(g);
         if(locationReceiver == null)
             locationReceiver = new LocationListener();
         registerReceiver(locationReceiver,new IntentFilter("location_update"));
 
-        Intent s =new Intent(getApplicationContext(), SocketService.class);
+        Intent s = new Intent(getApplicationContext(), SocketService.class);
         startService(s);
         if(socketReceiver == null)
             socketReceiver = new SocketListener();
@@ -116,6 +128,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public class WearableListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle extras = intent.getExtras();
+            if( intent.getAction().equals("pulse_change") ) {
+                int pulse = extras.getInt("pulse");
+                pulseListener.changePulse(pulse);
+            }
+        }
+    }
+
     private void initUI() {
         pref = new Preference(((Globals)this.getApplication()).getSharedPref());
         alertUsers = new HashMap<Long,User>();
@@ -152,6 +175,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setAlertListener(AlertListener alertListener){
         this.alertListener = alertListener;
+    }
+
+    public void setPulseListener(PulseListener pulseListener){
+        this.pulseListener = pulseListener;
     }
 
     public void initUsername(){
@@ -253,10 +280,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-
+        /*
         Intent g = new Intent(getApplicationContext(),LocationService.class);
         stopService(g);
-
+        */
         Intent s = new Intent(getApplicationContext(), SocketService.class);
         stopService(s);
     }
@@ -264,9 +291,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
+/*
         if(locationReceiver != null)
             unregisterReceiver(locationReceiver);
-
+*/
         if(socketReceiver != null)
             unregisterReceiver(socketReceiver);
     }

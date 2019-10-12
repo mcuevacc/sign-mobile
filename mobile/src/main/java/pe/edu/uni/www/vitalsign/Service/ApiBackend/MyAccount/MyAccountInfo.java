@@ -47,6 +47,7 @@ public class MyAccountInfo  {
         try {
             jsonBody.put("latitude", latitude);
             jsonBody.put("longitude", longitude);
+            jsonBody.put("accuracy", "");
         } catch (JSONException e) {}
 
         apiRequest.send(response -> {

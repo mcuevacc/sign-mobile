@@ -78,7 +78,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
         mTextView.setText(Integer.toString(mHeartRate));
 
-        new SendMessage(this.getApplicationContext(), this, "/heart-rate", Integer.toString(mHeartRate)).start();
+        new SendMessage(this.getApplicationContext(), this, "/smartwatch", Integer.toString(mHeartRate)).start();
     }
 
     @Override

@@ -2,12 +2,10 @@ package pe.edu.uni.www.vitalsign.Service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.widget.Toast;
+import androidx.annotation.Nullable;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -20,7 +18,6 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
-import java.util.Collections;
 
 import pe.edu.uni.www.vitalsign.App.Globals;
 import pe.edu.uni.www.vitalsign.Model.User;
