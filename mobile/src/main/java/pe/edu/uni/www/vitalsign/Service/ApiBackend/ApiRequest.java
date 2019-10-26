@@ -25,7 +25,7 @@ import pe.edu.uni.www.vitalsign.Service.Util.InterfaceService;
 public class ApiRequest{
 
     //private static String url="http://3.14.141.227/api-sign/web/app.php";
-    private static String url="http://192.168.1.2/api-sign/web/app_dev.php";
+    private static String url="http://192.168.1.5/api-sign/web/app_dev.php";
     private Context context;
     private RequestQueue mQueue;
 

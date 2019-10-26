@@ -30,6 +30,7 @@ import pe.edu.uni.www.vitalsign.Fragment.MapFragment;
 import pe.edu.uni.www.vitalsign.Model.Point;
 import pe.edu.uni.www.vitalsign.Model.User;
 import pe.edu.uni.www.vitalsign.R;
+import pe.edu.uni.www.vitalsign.Service.LocationBackgroundService;
 import pe.edu.uni.www.vitalsign.Service.LocationService;
 import pe.edu.uni.www.vitalsign.Service.SocketService;
 import pe.edu.uni.www.vitalsign.Service.Util.Preference;
@@ -48,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private Preference pref;
-    private LocationListener locationReceiver;
+    private LocationBroadcastReceiver locationReceiver;
     private SocketListener socketReceiver;
     private WearableListener wearableReceiver;
 
@@ -78,11 +79,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
 
-        Intent g = new Intent(getApplicationContext(), LocationService.class);
+        Intent g = new Intent(getApplicationContext(), LocationBackgroundService.class);
         startService(g);
         if(locationReceiver == null)
-            locationReceiver = new LocationListener();
-        registerReceiver(locationReceiver,new IntentFilter("location_update"));
+            locationReceiver = new LocationBroadcastReceiver();
+        registerReceiver(locationReceiver,new IntentFilter(LocationBackgroundService.LOCATION_UPDATE));
 
         Intent s = new Intent(getApplicationContext(), SocketService.class);
         startService(s);
@@ -92,10 +93,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         registerReceiver(socketReceiver,new IntentFilter("socket_alert_end"));
     }
 
-    private class LocationListener extends BroadcastReceiver {
+    private class LocationBroadcastReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
             Bundle extras = intent.getExtras();
-            if( intent.getAction().equals("location_update") ){
+            if( intent.getAction().equals(LocationBackgroundService.LOCATION_UPDATE) ){
                 Point location = extras.getParcelable("pe.edu.uni.www.vitalsign.Model.Point");
                 //Toast.makeText(getApplicationContext(),location.getLatitude()+" "+location.getLongitude(), Toast.LENGTH_SHORT).show();
             }
@@ -283,7 +284,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         /*
         Intent g = new Intent(getApplicationContext(),LocationService.class);
         stopService(g);
-        */
+         */
+        unregisterReceiver(locationReceiver);
+
         Intent s = new Intent(getApplicationContext(), SocketService.class);
         stopService(s);
     }
@@ -291,10 +294,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-/*
+        /*
         if(locationReceiver != null)
             unregisterReceiver(locationReceiver);
-*/
+        */
         if(socketReceiver != null)
             unregisterReceiver(socketReceiver);
     }

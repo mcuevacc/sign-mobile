@@ -47,7 +47,7 @@ public class SocketService extends Service {
             IO.Options opts = new IO.Options();
             opts.forceNew = true;
             opts.query = "auth_token="+authToken;
-            mSocket = IO.socket("http://192.168.1.2:3000",opts);
+            mSocket = IO.socket("http://192.168.1.5:3000",opts);
             mSocket.on("message", onMessage);
             mSocket.connect();
         } catch (URISyntaxException e) { }
