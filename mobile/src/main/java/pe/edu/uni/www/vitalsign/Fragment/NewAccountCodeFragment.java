@@ -24,11 +24,11 @@ import pe.edu.uni.www.vitalsign.R;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.ApiRequest;
 import pe.edu.uni.www.vitalsign.Service.ApiBackend.User.UserAccount;
 import pe.edu.uni.www.vitalsign.Service.Util.DesingService;
-import pe.edu.uni.www.vitalsign.Service.SmsReceiver;
+import pe.edu.uni.www.vitalsign.Service.BroadcastReceiver.SmsBroadcastReceiver;
 import pe.edu.uni.www.vitalsign.Service.Util.InputFilterMinMax;
 import pe.edu.uni.www.vitalsign.Service.Util.Util;
 
-public class NewAccountCodeFragment extends Fragment implements TextWatcher, SmsReceiver.SmsReceiveListener {
+public class NewAccountCodeFragment extends Fragment implements TextWatcher, SmsBroadcastReceiver.SmsReceiveListener {
 
     private View view;
 
@@ -50,7 +50,7 @@ public class NewAccountCodeFragment extends Fragment implements TextWatcher, Sms
     private Handler contador;
     private Runnable runnable;
 
-    private SmsReceiver smsReceiver;
+    private SmsBroadcastReceiver smsBroadcastReceiver;
 
     private DesingService desingService;
 
@@ -115,12 +115,12 @@ public class NewAccountCodeFragment extends Fragment implements TextWatcher, Sms
 
     private void startSMSListener() {
         try {
-            smsReceiver = new SmsReceiver();
-            smsReceiver.setSmsListener(this);
+            smsBroadcastReceiver = new SmsBroadcastReceiver();
+            smsBroadcastReceiver.setSmsListener(this);
 
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(SmsRetriever.SMS_RETRIEVED_ACTION);
-            getActivity().registerReceiver(smsReceiver, intentFilter);
+            getActivity().registerReceiver(smsBroadcastReceiver, intentFilter);
 
             SmsRetrieverClient client = SmsRetriever.getClient(getActivity());
 
@@ -141,16 +141,16 @@ public class NewAccountCodeFragment extends Fragment implements TextWatcher, Sms
     public void onCodeReceived(String code) {
 
         editTextCode.setText(code);
-        if (smsReceiver != null) {
-            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(smsReceiver);
+        if (smsBroadcastReceiver != null) {
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(smsBroadcastReceiver);
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (smsReceiver != null)
-            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(smsReceiver);
+        if (smsBroadcastReceiver != null)
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(smsBroadcastReceiver);
     }
 
     // Funciones de los botones y validaciones

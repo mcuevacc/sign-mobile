@@ -46,7 +46,7 @@
         <activity android:name=".Activity.NewAccountActivity" />
 
         <service
-            android:name=".Service.LocationBackgroundService"></service>
+            android:name=".Service.LocationIntentService"></service>
 
         <service android:name=".Service.LocationService" />
         <service android:name=".Service.SocketService" />
@@ -65,7 +65,7 @@
         </service>
 
         <receiver
-            android:name=".Service.SmsReceiver"
+            android:name=".Service.BroadcastReceiver.SmsBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
