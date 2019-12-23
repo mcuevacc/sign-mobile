@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Vital Sign</string>
+    <string name="app_name">MutuAlert</string>
     <string name="username">Phone</string>
     <string name="password">Password</string>
     <string name="remember">Remember</string>

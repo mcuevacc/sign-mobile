@@ -4,7 +4,7 @@
     android:id="@+id/watch_view_stub"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pe.edu.uni.www.vitalsign.MainActivity"
+    tools:context="pe.edu.uni.www.mutualert.MainActivity"
     tools:deviceIds="wear_round"
     android:background="@color/white">
 
